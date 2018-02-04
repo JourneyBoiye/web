@@ -8,6 +8,7 @@ A cognitive travel companion.
 * Age
 * Interests (text box)
 * Budget
-* Current location (city)
+* Travel date
+* Current location (city) (do not want to recommand the city that people currently live in)
 * Numbler of people
 * Purpose of travel
