@@ -6,9 +6,10 @@ A cognitive travel companion.
 
 * Name
 * Age
-* Interests (text box)
+* Interests (check box for now, will change to text area later)
 * Budget
 * Travel date
 * Current location (city) (do not want to recommand the city that people currently live in)
 * Numbler of people
-* Purpose of travel
+* Purpose of travel (check box for now, will change to text area later)
+* Destination area (west coast, east coast, USA, world)
