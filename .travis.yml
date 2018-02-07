@@ -4,7 +4,7 @@ node_js:
   - "8"
 env:
   - NODE_ENV=TEST
-tests": 
+test: 
   - "jshint journey.js"
   - "conversation-test.js"
   - "discovery-tests.js"
