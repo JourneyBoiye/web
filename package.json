@@ -1,0 +1,12 @@
+{
+	"name": "web",
+	"description": "",
+	"author": "",
+	"version": "0.0.0",
+	"devDependencies": {
+		"jshint": "^2.9.5"
+	},
+	"script": {
+		"tests": ["jshint journey.js", "conversation-test.js", "discovery-tests.js"]
+	}
+}
