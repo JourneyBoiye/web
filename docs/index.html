@@ -115,7 +115,7 @@
     </div>
   </section>
 
-  <script>
+<!--   <script>
     function showInfo() {
       var name = document.getElementById("name").value;
       display_message.innerHTML = name;
@@ -145,8 +145,14 @@
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
   <script src="guestbook.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=en"></script>  
 </body>
+
+  <script>
+    var input = document.getElementById('city');
+    var autocomplete = new google.maps.places.Autocomplete(input);
+  </script>
 
 </html>
