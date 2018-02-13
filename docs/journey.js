@@ -18,5 +18,6 @@ $(document).ready(function() {
 
   query.on('click', function() {
     queryResults.html(queryResultsTemplate(context));
+    $("html, body").animate({ scrollTop: 0 }, 600);
   });
 });
