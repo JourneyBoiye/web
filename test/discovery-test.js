@@ -1,4 +1,4 @@
-const action = require('../../actions/discovery');
+const action = require('../docs/journey');
 const assert = require('assert');
 const nock = require('nock');
 
