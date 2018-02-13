@@ -4,7 +4,7 @@ $(document).ready(function() {
   var query = $('#query');
   var queryResults = $('#query-results');
 
-  var testQueries = [
+  var testResults = [
     {
       'city': 'Buenos Aires',
       'country': 'Argentina',
@@ -13,7 +13,7 @@ $(document).ready(function() {
   ];
 
   const context = {
-    queries: testQueries
+    results: testResults
   };
 
   query.on('click', function() {
