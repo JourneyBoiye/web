@@ -2,8 +2,8 @@
  * Web application
  */
 const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_dev/suggestions/suggestion-provider.json';
-const guestbook = {
-  // add a single guestbood entry
+const journeyBoiye = {
+  // add a single journeyBoiye entry
   add(activities) {
     console.log('Sending', activities)
     return $.ajax({
@@ -26,13 +26,13 @@ const guestbook = {
     entriesTemplate = Handlebars.compile($('#entries-template').html());
   }
 
-  // intercept the click on the submit button, add the guestbook entry and
+  // intercept the click on the submit button, add the journeyBoiye entry and
   // reload entries on success
   $(document).on('submit', '#addEntry', function(e) {
     e.preventDefault();
 
     var queryResults = $('#entries');
-    guestbook.add(
+    journeyBoiye.add(
       $('#activities').val().trim()
     ).done(function(result) {
       queryResults.html(entriesTemplate(result))
