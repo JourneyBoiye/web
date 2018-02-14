@@ -1,7 +1,7 @@
 /**
  * Web application
  */
-const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_dev/suggestions/suggestion-provider-sequence.json';
+const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_dev/suggestions/suggestion-provider.json';
 const guestbook = {
   // add a single guestbood entry
   add(activities) {
