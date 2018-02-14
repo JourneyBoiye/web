@@ -43,7 +43,7 @@ const guestbook = {
         {
           'name': 'Buenos Aires',
           'country': 'Argentina',
-          'comment': 'A beautiful European flavored city in the heart of South America'
+          'text': 'A beautiful European flavored city in the heart of South America'
         }
       ];
 
