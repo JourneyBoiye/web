@@ -24,88 +24,71 @@
           <h3 class="title is-3">
             Recommendations from your last search
           </h3>
-          <div id="query-results"></div>
+          <div id="entries"></div>
         </div>
         <div class="column">
           <h3 class="title is-3">
             Add your information
           </h3>
-          <div class="field">
-            <label class="label">Name</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="your name" id="name">
+          <form id="addEntry">
+            <div class="field">
+              <label class="label">Name</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="your name" id="name">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Age</label>
-            <div class="control">
-              <input class="input" type="number" placeholder="your age" id="age" min="0">
+            <div class="field">
+              <label class="label">Age</label>
+              <div class="control">
+                <input class="input" type="number" placeholder="your age" id="age" min="0">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Acticities that you are interested in</label>
-            <div class="control">
-              <input type="checkbox" name="backpacking" value="backpacking"> Backpacking<br>
-              <input type="checkbox" name="canyoning" value="canyoning"> Canyoning<br>
-              <input type="checkbox" name="orienteering" value="orienteering"> Orienteering<br>
-              <input type="checkbox" name="golf" value="golf"> Golf<br>
-              <input type="checkbox" name="rockClimbing" value="rockClimbing"> Rock climbing<br>
-              <input type="checkbox" name="running" value="running"> Running<br>
-              <input type="checkbox" name="alpineSkiing" value="alpineSkiing"> Alpine skiing<br>
-              <input type="checkbox" name="snowkiting" value="snowkiting"> Snowkitting<br>
-              <input type="checkbox" name="snowmobiling" value="snowmobiling"> Snowmobiling<br>
-              <input type="checkbox" name="birding" value="birding"> Birding<br>
-              <input type="checkbox" name="food" value="food"> Food<br>
-              <input type="checkbox" name="zipLining" value="zipLining"> Zip lining<br>
-              <input type="checkbox" name="swimming" value="swimming"> Swimming<br>
-              <input type="checkbox" name="beach" value="beach"> Beach<br>
+            <div class="field">
+              <label class="label">Activities that you are interested in</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="activities" id="activities">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Budget</label>
-            <div class="control">
-              <input class="input" type="number" placeholder="your budget" id="budget" min="0">
+            <div class="field">
+              <label class="label">Budget</label>
+              <div class="control">
+                <input class="input" type="number" placeholder="your budget" id="budget" min="0">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Travel date</label>
-            <div class="control">
-              <input class="input" type="date" id="date">
+            <div class="field">
+              <label class="label">Travel date</label>
+              <div class="control">
+                <input class="input" type="date" id="date">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Where are you from?</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="city" id="city">
+            <div class="field">
+              <label class="label">Where are you from?</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="city" id="city">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">How many people will you travel with?</label>
-            <div class="control">
-              <input class="input" type="number" placeholder="number of people" id="numOfPeople" min="0">
+            <div class="field">
+              <label class="label">How many people will you travel with?</label>
+              <div class="control">
+                <input class="input" type="number" placeholder="number of people" id="numOfPeople" min="0">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Purpose of travel</label>
-            <div class="control">
-              <input type="checkbox" name="anniversary" value="anniversary"> Celebrating anniversary<br>
-              <input type="checkbox" name="family" value="family"> Having fun with family<br>
-              <input type="checkbox" name="friends" value="friends"> Having fun with friends<br>
-              <input type="checkbox" name="own" value="own"> Relexing on your own<br>
+            <div class="field">
+              <label class="label">Purpose of travel</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="purpose" id="purpose">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Destination region</label>
-            <div class="control">
-              <input type="checkbox" name="eastCoast" value="eastCoast"> East coast<br>
-              <input type="checkbox" name="westCoast" value="westCoast"> West coast<br>
-              <input type="checkbox" name="USA" value="USA"> USA<br>
-              <input type="checkbox" name="world" value="world"> World<br>
+            <div class="field">
+              <label class="label">Destination region</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="destination" id="destination">
+              </div>
             </div>
-          </div>
-          <div class="control">
-            <button id="query" class="button is-primary">Get our recommendation</button>
-          </div>
+            <div class="control">
+              <button class="button is-primary">Get our recommendation</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -118,7 +101,7 @@
     }
   </script>
 
-  <script id="queries-template" type="text/x-handlebars-template">
+  <script id="entries-template" type="text/x-handlebars-template">
     {{#each results}}
     <div class="box">
       <article class="media">
@@ -130,8 +113,8 @@
         <div class="media-content">
           <div class="content">
             <p>
-              <strong>{{city}}</strong> <small>{{country}}</small>
-              <br> {{content}}
+              <strong>{{name}}</strong>
+              <br> {{comment}}
             </p>
           </div>
         </div>
@@ -142,8 +125,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=en"></script>  
   <script src="journey.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=en"></script>
 </body>
 
   <script>

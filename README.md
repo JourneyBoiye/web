@@ -9,7 +9,7 @@ A cognitive travel companion.
 * Interests (check box for now, will change to text area later)
 * Budget
 * Travel date
-* Current location (city) (do not want to recommand the city that people currently live in)
-* Numbler of people
+* Current location (city) (do not want to recommend the city that people currently live in)
+* Number of people
 * Purpose of travel (check box for now, will change to text area later)
 * Destination area (west coast, east coast, USA, world)
