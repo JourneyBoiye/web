@@ -20,19 +20,19 @@ const journeyBoiye = {
 
 Handlebars.registerHelper("flagLevel", function(level){
   if (level == 1){
-    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:green\"></i>");
+    return new Handlebars.SafeString("<span title=\"level 1: Excercise normal precautions\"><i class=\"fas fa-exclamation-circle\" style=\"color:green\"></i></span>");
   }
   else if (level == 2){
-    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:orange\"></i>");
+    return new Handlebars.SafeString("<span title=\"level 2: Excercise increased cautions\"><i class=\"fas fa-exclamation-circle\" style=\"color:orange\"></i></span>");
   }
   else if (level == 3){
-    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:red\"></i>");
+    return new Handlebars.SafeString("<span title=\"level 3: Reconsider travel\"><i class=\"fas fa-exclamation-circle\" style=\"color:red\"></i></span>");
   }
   else if (level == 4){
-    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:darkred\"></i>");
+    return new Handlebars.SafeString("<span title=\"level 4: Do not travel\"><i class=\"fas fa-exclamation-circle\" style=\"color:darkred\"></i></span>");
   }
   else{
-    return new Handlebars.SafeString("<i class=\"fas fa-question-circle\" style=\"color:yellow\"></i>");
+    return new Handlebars.SafeString("<span title=\"No travel advisories available\"><i class=\"fas fa-question-circle\" style=\"color:yellow\"></i></span>");
   }
 
 });
@@ -93,7 +93,8 @@ Handlebars.registerHelper("flagLevel", function(level){
     journeyBoiye.add(
       $('#activities').val().trim()
     ).done(function(result) {
-      queryResults.html(entriesTemplate(dummyQueries)) // result
+      console.log(result);
+      queryResults.html(entriesTemplate(result)) // use dummyQueries for test
       $("html, body").animate({scrollTop: 0 }, 600)
     }).error(function(error) {
       // Included for demo purposes
