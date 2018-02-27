@@ -32,7 +32,7 @@ Handlebars.registerHelper("flagLevel", function(level){
     return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:darkred\"></i>");
   }
   else{
-    return "";
+    return new Handlebars.SafeString("<i class=\"fas fa-question-circle\" style=\"color:yellow\"></i>");
   }
 
 });
@@ -51,10 +51,49 @@ Handlebars.registerHelper("flagLevel", function(level){
     e.preventDefault();
 
     var queryResults = $('#entries');
+    var dummyQueries =  // for test
+        {
+          'results':[
+          {
+            'name': 'Buenos Aires',
+            'country': 'Argentina',
+            'region': 'South America',
+            'text': 'A beautiful European flavored city in the heart of South America',
+            'level': 1
+          },
+          {
+            'name': 'Columbus',
+            'country': 'United States',
+            'region': 'North America',
+            'text': 'A beautiful European flavored city in the heart of South America',
+            'level': 2
+          },
+          {
+            'name': 'Tianjin',
+            'country': 'China',
+            'region': 'Asia',
+            'text': 'A beautiful European flavored city in the heart of South America',
+            'level': 3
+          },
+          {
+            'name': 'Pairs',
+            'country': 'Fance',
+            'region': 'Europe',
+            'text': 'A beautiful European flavored city in the heart of South America',
+            'level': 4
+          },
+          {
+            'name': 'Columbus',
+            'country': 'United States',
+            'region': 'North America',
+            'text': 'A beautiful European flavored city in the heart of South America',
+            'level': ''
+          }]
+        };
     journeyBoiye.add(
       $('#activities').val().trim()
     ).done(function(result) {
-      queryResults.html(entriesTemplate(result))
+      queryResults.html(entriesTemplate(dummyQueries)) // result
       $("html, body").animate({scrollTop: 0 }, 600)
     }).error(function(error) {
       // Included for demo purposes
@@ -62,8 +101,8 @@ Handlebars.registerHelper("flagLevel", function(level){
         {
           'name': 'Buenos Aires',
           'country': 'Argentina',
-          'region': 'South America'
-          'text': 'A beautiful European flavored city in the heart of South America'
+          'region': 'South America',
+          'text': 'A beautiful European flavored city in the heart of South America',
           'level': 1
         }
       ];
