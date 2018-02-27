@@ -18,6 +18,25 @@ const journeyBoiye = {
   }
 };
 
+Handlebars.registerHelper("flagLevel", function(level){
+  if (level == 1){
+    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:green\"></i>");
+  }
+  else if (level == 2){
+    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:orange\"></i>");
+  }
+  else if (level == 3){
+    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:red\"></i>");
+  }
+  else if (level == 4){
+    return new Handlebars.SafeString("<i class=\"fas fa-exclamation-circle\" style=\"color:darkred\"></i>");
+  }
+  else{
+    return "";
+  }
+
+});
+
 (function() {
 
   let entriesTemplate;
@@ -43,7 +62,9 @@ const journeyBoiye = {
         {
           'name': 'Buenos Aires',
           'country': 'Argentina',
+          'region': 'South America'
           'text': 'A beautiful European flavored city in the heart of South America'
+          'level': 1
         }
       ];
 
