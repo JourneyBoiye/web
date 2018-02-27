@@ -77,7 +77,7 @@ Handlebars.registerHelper("flagLevel", function(level){
           },
           {
             'name': 'Pairs',
-            'country': 'Fance',
+            'country': 'France',
             'region': 'Europe',
             'text': 'A beautiful European flavored city in the heart of South America',
             'level': 4
