@@ -2,6 +2,7 @@
  * Web application
  */
 const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_dev/suggestions/suggestion-provider.json';
+const feedbackServiceEndpoint = 'https://openwhisk.ng.bluemix.net/api/v1/web/lan.74%40osu.edu_dev/feedback/feedback-service.json'
 const journeyBoiye = {
   // add a single journeyBoiye entry
   add(activities) {
@@ -15,6 +16,18 @@ const journeyBoiye = {
       }),
       dataType: 'json',
     });
+  },
+  update(feedback) {
+    console.log('Sending', feedback);
+    return $.ajax({
+      type: 'POST',
+      url: `${feedbackServiceEndpoint}`,
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify({
+        feedback,
+      }),
+      dataType: 'json',
+    })
   }
 };
 
@@ -97,22 +110,17 @@ Handlebars.registerHelper("flagLevel", function(level){
       queryResults.html(entriesTemplate(result)) // use dummyQueries for test
       $("html, body").animate({scrollTop: 0 }, 600)
     }).error(function(error) {
-      // Included for demo purposes
-      var testQueries = [
-        {
-          'name': 'Buenos Aires',
-          'country': 'Argentina',
-          'region': 'South America',
-          'text': 'A beautiful European flavored city in the heart of South America',
-          'level': 1
-        }
-      ];
-
-      const dummy = {
-        results: testQueries
-      };
-      queryResults.html(entriesTemplate(dummy))
       console.log(error);
+    });
+  });
+
+  $(document).on('click', '#nlc', function() {
+    journeyBoiye.update(
+      $('#purpose').val().trim()
+    ).done(function(result) {
+      console.log(result)
+    }).error(function(error) {
+      console.log(error)
     });
   });
 
