@@ -89,7 +89,7 @@ var max_rpi = 0;
       $('#purpose').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
     ).done(function(result) {
       console.log(result)
-      result.resultsArray = result.docs.slice(0,6) // rly gud code don't look into it
+      result.resultsArray = result.docs
       queryResults.html(entriesTemplate(result))
       $("html, body").animate({scrollTop: 0 }, 600)
     }).error(function(error) {
