@@ -26,7 +26,7 @@ const journeyBoiye = {
       data: JSON.stringify({
         "feedback": feedback,
         "min_rpi": min_rpi,
-        "max_rpi": max_rpi
+        "max_rpi": max_rpi,
         "activities": activities
       }),
       dataType: 'json',
