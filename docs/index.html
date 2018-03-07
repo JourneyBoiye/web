@@ -8,6 +8,7 @@
   <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
@@ -103,7 +104,7 @@
   </script>
 
   <script id="entries-template" type="text/x-handlebars-template">
-    {{#each results}}
+    {{#each resultsArray}}
     <div class="box">
       <article class="media">
 <!--         <div class="media-left">
@@ -125,6 +126,15 @@
     {{else}}
     <h2>No results found...</h2>
     {{/each}}
+    <div class="field center">
+     <label class="label">How were these results?</label>
+      <div class="control">
+       <input class="input" type="text" id="purpose">
+      </div>
+      <div class="control center" id="nlc">
+        <button class="button is-primary">Update results</button>
+      </div>
+    </div>
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>

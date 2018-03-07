@@ -2,6 +2,7 @@
  * Web application
  */
 const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_dev/suggestions/suggestion-provider.json';
+const feedbackServiceEndpoint = 'https://openwhisk.ng.bluemix.net/api/v1/web/lan.74%40osu.edu_dev/feedback/feedback-service.json'
 const journeyBoiye = {
   // add a single journeyBoiye entry
   add(activities) {
@@ -15,6 +16,20 @@ const journeyBoiye = {
       }),
       dataType: 'json',
     });
+  },
+  update(feedback, min_rpi, max_rpi) {
+    console.log('Sending', feedback);
+    return $.ajax({
+      type: 'POST',
+      url: `${feedbackServiceEndpoint}`,
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify({
+        "feedback": feedback,
+        "min_rpi": min_rpi,
+        "max_rpi": max_rpi
+      }),
+      dataType: 'json',
+    })
   }
 };
 
@@ -37,6 +52,8 @@ Handlebars.registerHelper("flagLevel", function(level){
 
 });
 
+var min_rpi = 300;
+var max_rpi = 0;
 (function() {
 
   let entriesTemplate;
@@ -51,68 +68,31 @@ Handlebars.registerHelper("flagLevel", function(level){
     e.preventDefault();
 
     var queryResults = $('#entries');
-    var dummyQueries =  // for test
-        {
-          'results':[
-          {
-            'name': 'Buenos Aires',
-            'country': 'Argentina',
-            'region': 'South America',
-            'text': 'A beautiful European flavored city in the heart of South America',
-            'level': 1
-          },
-          {
-            'name': 'Columbus',
-            'country': 'United States',
-            'region': 'North America',
-            'text': 'A beautiful European flavored city in the heart of South America',
-            'level': 2
-          },
-          {
-            'name': 'Tianjin',
-            'country': 'China',
-            'region': 'Asia',
-            'text': 'A beautiful European flavored city in the heart of South America',
-            'level': 3
-          },
-          {
-            'name': 'Pairs',
-            'country': 'France',
-            'region': 'Europe',
-            'text': 'A beautiful European flavored city in the heart of South America',
-            'level': 4
-          },
-          {
-            'name': 'Columbus',
-            'country': 'United States',
-            'region': 'North America',
-            'text': 'A beautiful European flavored city in the heart of South America',
-            'level': ''
-          }]
-        };
     journeyBoiye.add(
       $('#activities').val().trim()
     ).done(function(result) {
       console.log(result);
-      queryResults.html(entriesTemplate(result)) // use dummyQueries for test
+      min_rpi = result.min_rpi
+      max_rpi = result.max_rpi
+      queryResults.html(entriesTemplate(result))
       $("html, body").animate({scrollTop: 0 }, 600)
     }).error(function(error) {
-      // Included for demo purposes
-      var testQueries = [
-        {
-          'name': 'Buenos Aires',
-          'country': 'Argentina',
-          'region': 'South America',
-          'text': 'A beautiful European flavored city in the heart of South America',
-          'level': 1
-        }
-      ];
-
-      const dummy = {
-        results: testQueries
-      };
-      queryResults.html(entriesTemplate(dummy))
       console.log(error);
+    });
+  });
+
+  $(document).on('click', '#nlc', function() {
+
+    var queryResults = $('#entries');
+    journeyBoiye.update(
+      $('#purpose').val().trim(), min_rpi, max_rpi
+    ).done(function(result) {
+      console.log(result)
+      result.resultsArray = result.docs.slice(0,6) // rly gud code don't look into it
+      queryResults.html(entriesTemplate(result))
+      $("html, body").animate({scrollTop: 0 }, 600)
+    }).error(function(error) {
+      console.log(error)
     });
   });
 
