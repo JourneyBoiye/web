@@ -16,6 +16,7 @@
     "webpack-cli": "^2.0.10"
   },
   "scripts": {
-    "test": "mocha"
+    "build": "webpack --config webpack.config.js",
+    "test": "mocha" 
   }
 }

@@ -26,7 +26,7 @@ const journeyBoiye = {
       dataType: 'json',
     });
   },
-  update(feedback, min_rpi, max_rpi) {
+  update(feedback, min_rpi, max_rpi, activities) {
     console.log('Sending', feedback);
     return $.ajax({
       type: 'POST',
@@ -35,7 +35,8 @@ const journeyBoiye = {
       data: JSON.stringify({
         "feedback": feedback,
         "min_rpi": min_rpi,
-        "max_rpi": max_rpi
+        "max_rpi": max_rpi,
+        "activities": activities
       }),
       dataType: 'json',
     })
@@ -77,6 +78,8 @@ Handlebars.registerHelper("flagLevel", function(level){
 
 });
 
+var min_rpi = 300;
+var max_rpi = 0;
 function getCountryFromAutocomplete(autocomplete) {
   let place = autocomplete.getPlace();
   let country = '';
@@ -111,9 +114,6 @@ function countryNameToCode(name) {
 
   return code;
 }
-
-var min_rpi = 300;
-var max_rpi = 0;
 
 (function() {
   var input = document.getElementById('city');
@@ -170,12 +170,33 @@ var max_rpi = 0;
 
     var queryResults = $('#entries');
     journeyBoiye.update(
-      $('#purpose').val().trim(), min_rpi, max_rpi
+      $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
     ).done(function(result) {
       console.log(result)
-      result.resultsArray = result.docs.slice(0,6) // rly gud code don't look into it
-      queryResults.html(entriesTemplate(result))
-      $("html, body").animate({scrollTop: 0 }, 600)
+      result.resultsArray = result.docs
+      let country = getCountryFromAutocomplete(autocomplete) || 'United States';
+      let code = countryNameToCode(country);
+
+      const promises = result.resultsArray.map(function(result) {
+        return flightPriceChecker.avg(code, result.iata).then(function(resp) {
+          result.fare = resp.avg;
+          result.fareValid = resp.success;
+
+          return result;
+        });
+      });
+
+      Promise.all(promises).then(function(results) {
+        console.log(results);
+        let context = {
+          resultsArray: results
+        };
+
+        queryResults.html(entriesTemplate(context, {
+          data: { intl: HANDLEBARS_INTL_DATA }
+        }));
+        $("html, body").animate({scrollTop: 0 }, 600)
+      });
     }).error(function(error) {
       console.log(error)
     });
