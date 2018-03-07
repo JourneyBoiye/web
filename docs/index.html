@@ -96,13 +96,6 @@
     </div>
   </section>
 
-  <script>
-    function showInfo() {
-      var name = document.getElementById("name").value;
-      display_message.innerHTML = name;
-    }
-  </script>
-
   <script id="entries-template" type="text/x-handlebars-template">
     {{#each resultsArray}}
     <div class="box">
@@ -115,8 +108,10 @@
         <div class="media-content">
           <div class="content">
             <p>
-              <strong>{{name}}</strong> 
-              ({{country}}{{flagLevel level}}, {{region}})
+              <strong>{{name}}</strong>
+              ({{country}} {{flagLevel level}} {{region}})
+              <i class="fas fa-plane"></i>
+              {{formatNumber fare style="currency" currency="USD"}}
               <br> {{text}}
             </p>
           </div>
@@ -129,7 +124,7 @@
     <div class="field center">
      <label class="label">How were these results?</label>
       <div class="control">
-       <input class="input" type="text" id="purpose">
+       <input class="input" type="text" id="feedback">
       </div>
       <div class="control center" id="nlc">
         <button class="button is-primary">Update results</button>
@@ -137,19 +132,12 @@
     </div>
   </script>
 
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="journey.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en"></script>
+  <script src="./js/handlebars-intl.min.js"></script>
 
-
-  <script>
-    var input = document.getElementById('city');
-    var autocomplete = new google.maps.places.Autocomplete(input,{types: ['(cities)']});
-    google.maps.event.addListener(autocomplete, 'place_changed', function(){
-       var place = autocomplete.getPlace();
-    })
-  </script>
+  <script src="./js/dist/bundle.js"></script>
 </body>
 
 </html>
