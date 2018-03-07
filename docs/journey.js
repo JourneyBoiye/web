@@ -17,7 +17,7 @@ const journeyBoiye = {
       dataType: 'json',
     });
   },
-  update(feedback, min_rpi, max_rpi) {
+  update(feedback, min_rpi, max_rpi, activities) {
     console.log('Sending', feedback);
     return $.ajax({
       type: 'POST',
@@ -27,6 +27,7 @@ const journeyBoiye = {
         "feedback": feedback,
         "min_rpi": min_rpi,
         "max_rpi": max_rpi
+        "activities": activities
       }),
       dataType: 'json',
     })
@@ -85,7 +86,7 @@ var max_rpi = 0;
 
     var queryResults = $('#entries');
     journeyBoiye.update(
-      $('#purpose').val().trim(), min_rpi, max_rpi
+      $('#purpose').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
     ).done(function(result) {
       console.log(result)
       result.resultsArray = result.docs.slice(0,6) // rly gud code don't look into it
