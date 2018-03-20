@@ -121,15 +121,18 @@
     {{else}}
     <h2>No results found...</h2>
     {{/each}}
-    <div class="field center">
+    
+
      <label class="label">How were these results?</label>
-      <div class="control">
+      <div class="columns">
+        <div class="column is-three-quarters">
        <input class="input" type="text" id="feedback">
-      </div>
-      <div class="control center" id="nlc">
+     </div>
+      <div class="column" id="nlc">
         <button class="button is-primary">Update results</button>
       </div>
     </div>
+
   </script>
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en"></script>
