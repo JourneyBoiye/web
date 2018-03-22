@@ -1,4 +1,4 @@
-var _CANNONICAL_FORMS = {
+let _CANNONICAL_MAP = {
     'usa': 'united states',
     'united states of america': 'united states',
     'uk': 'united kingdom',
@@ -51,8 +51,8 @@ var _CANNONICAL_FORMS = {
 
 export function normalizer(name) {
   let lc = name.toLocaleLowerCase();
-	if (lc in _CANNONICAL_FORMS) {
-		return _CANNONICAL_FORMS[lc];
+	if (lc in _CANNONICAL_MAP) {
+		return _CANNONICAL_MAP[lc];
 	}
 
 	return lc;

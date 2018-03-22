@@ -14,12 +14,21 @@
 <body>
   <section class="section">
     <div class="container">
-      <h1 class="title is-1">
-        JourneyBoiye
-      </h1>
-      <p class="subtitle">
-        A travel recommendation system
-      </p>
+      <div class="columns">
+        <div class="column">
+          <h1 class="title is-1">
+            JourneyBoiye
+          </h1>
+          <p class="subtitle">
+            A travel recommendation system
+          </p>
+        </div>
+
+        <div class="column">
+          <ul id="errors">
+          </ul>
+        </div>
+      </div>
 
       <div class="columns">
         <div class="column">
@@ -36,7 +45,7 @@
             <div class="field">
               <label class="label">Age</label>
               <div class="control">
-                <input class="input" type="number" placeholder="Your Age" id="age" min="0">
+                <input class="input" type="number" placeholder="Your Age" id="age" min="0" required>
               </div>
             </div>
             <div class="field">
@@ -48,19 +57,25 @@
             <div class="field">
               <label class="label">Budget</label>
               <div class="control">
-                <input class="input" type="number" placeholder="Your Budget" id="budget" min="0">
+                <input class="input" type="number" placeholder="Your Budget" id="budget" min="0" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Travel date</label>
+              <label class="label">Travel start date</label>
               <div class="control">
-                <input class="input" type="date" id="date">
+                <input class="input" type="date" id="end-date" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Travel end date</label>
+              <div class="control">
+                <input class="input" type="date" id="start-date" required>
               </div>
             </div>
             <div class="field">
               <label class="label">Where are you from?</label>
               <div class="control">
-                <input class="input" type="text" placeholder="City" id="city">
+                <input class="input" type="text" placeholder="City" id="city" required>
               </div>
             </div>
             <div class="control">

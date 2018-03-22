@@ -1,5 +1,6 @@
 import { countries } from 'country-data';
 import { normalizer } from './js/country.js';
+import * as domlist from './js/domlist.js';
 
 
 /**
@@ -75,7 +76,6 @@ Handlebars.registerHelper("flagLevel", function(level){
   else{
     return new Handlebars.SafeString("<span title=\"No travel advisories available\"><i class=\"fas fa-question-circle\" style=\"color:yellow\"></i></span>");
   }
-
 });
 
 var min_rpi = 300;
@@ -116,57 +116,71 @@ function countryNameToCode(name) {
 }
 
 (function() {
-  var input = document.getElementById('city');
-  var autocomplete = new google.maps.places.Autocomplete(input,
+  var cityInput = document.getElementById('city');
+  var autocomplete = new google.maps.places.Autocomplete(cityInput,
      {types: ['(cities)']});
 
-  let entriesTemplate;
+  let countryValid = false;
+  $(cityInput).change(function() {
+    countryValid = false;
+  });
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    countryValid = true;
+  });
 
-  function prepareTemplates() {
-    entriesTemplate = Handlebars.compile($('#entries-template').html());
-  }
+  let errorsDisplay = $('#errors');
+  let entriesTemplate;
 
   // intercept the click on the submit button, add the journeyboiye entry and
   // reload entries on success
   $(document).on('submit', '#addEntry', function(e) {
     e.preventDefault();
 
+    domlist.clear(errorsDisplay);
+
     var queryResults = $('#entries');
     journeyBoiye.add(
       $('#activities').val().trim()
     ).done(function(resp) {
-      min_rpi = resp.min_rpi
-      max_rpi = resp.max_rpi
+      min_rpi = resp.min_rpi;
+      max_rpi = resp.max_rpi;
 
-      let country = getCountryFromAutocomplete(autocomplete) || 'United States';
-      let code = countryNameToCode(country);
+      let country = getCountryFromAutocomplete(autocomplete);
 
-      const promises = resp.resultsArray.map(function(result) {
-        return flightPriceChecker.avg(code, result.iata).then(function(resp) {
-          result.fare = resp.avg;
-          result.fareValid = resp.success;
+      if (countryValid && country !== '') {
+        let code = countryNameToCode(country);
 
-          return result;
+        const promises = resp.resultsArray.map(function(result) {
+          return flightPriceChecker.avg(code, result.iata).then(function(resp) {
+            result.fare = resp.avg;
+            result.fareValid = resp.success;
+
+            return result;
+          });
         });
-      });
 
-      Promise.all(promises).then(function(results) {
-        console.log(results);
-        let context = {
-          resultsArray: results
-        };
+        Promise.all(promises).then(function(results) {
+          console.log(results);
+          let context = {
+            resultsArray: results
+          };
 
-        queryResults.html(entriesTemplate(context, {
-          data: { intl: HANDLEBARS_INTL_DATA }
-        }));
-        $("html, body").animate({scrollTop: 0 }, 600)
-      });
+          queryResults.html(entriesTemplate(context, {
+            data: { intl: HANDLEBARS_INTL_DATA }
+          }));
+          $("html, body").animate({scrollTop: 0 }, 600);
+        });
+      } else {
+        domlist.add(errorsDisplay, 'The country must be filled in with autocomplete.');
+      }
     }).error(function(error) {
       console.log(error);
+      domlist.add(errorsDisplay, 'There was an error fetching locations.');
     });
   });
 
   $(document).on('click', '#nlc', function() {
+    domlist.clear(errorsDisplay);
 
     var queryResults = $('#entries');
     journeyBoiye.update(
@@ -174,7 +188,7 @@ function countryNameToCode(name) {
     ).done(function(result) {
       console.log(result)
       result.resultsArray = result.docs
-      let country = getCountryFromAutocomplete(autocomplete) || 'United States';
+      let country = getCountryFromAutocomplete(autocomplete);
       let code = countryNameToCode(country);
 
       const promises = result.resultsArray.map(function(result) {
@@ -195,15 +209,14 @@ function countryNameToCode(name) {
         queryResults.html(entriesTemplate(context, {
           data: { intl: HANDLEBARS_INTL_DATA }
         }));
-        $("html, body").animate({scrollTop: 0 }, 600)
+        $("html, body").animate({scrollTop: 0 }, 600);
       });
     }).error(function(error) {
-      console.log(error)
+      console.log(error);
     });
   });
 
   $(document).ready(function() {
-    prepareTemplates();
+    entriesTemplate = Handlebars.compile($('#entries-template').html());
   });
 })();
-
