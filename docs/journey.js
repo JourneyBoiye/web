@@ -11,6 +11,20 @@ const HANDLEBARS_INTL_DATA = {
 };
 HandlebarsIntl.registerWith(Handlebars);
 
+const notifyLevel = Object.freeze({
+  SUCCESS: 'success',
+  INFO: 'info',
+  WARNING: 'warning',
+  DANGER: 'danger'
+});
+const notify = (message, type) => {
+  $.notify({
+    message: message
+  }, {
+    type: type
+  });
+}
+
 const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_dev/suggestions/suggestion-provider.json';
 const feedbackServiceEndpoint = 'https://openwhisk.ng.bluemix.net/api/v1/web/lan.74%40osu.edu_dev/feedback/feedback-service.json'
 const journeyBoiye = {
@@ -140,50 +154,46 @@ function countryNameToCode(name) {
 
     domlist.clear(errorsDisplay);
 
-    var queryResults = $('#entries');
-    journeyBoiye.add(
-      $('#activities').val().trim()
-    ).done(function(resp) {
-      min_rpi = resp.min_rpi;
-      max_rpi = resp.max_rpi;
-
-      let country = getCountryFromAutocomplete(autocomplete);
-
-      if (countryValid && country !== '') {
-        let code = countryNameToCode(country);
-
-        const promises = resp.resultsArray.map(function(result) {
-          return flightPriceChecker.avg(code, result.iata).then(function(resp) {
-            result.fare = resp.avg;
-            result.fareValid = resp.success && resp.avg > 0;
-
-            return result;
+    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
+    if (countryValid && country !== '') {
+      var queryResults = $('#entries');
+      journeyBoiye.add(
+        $('#activities').val().trim()
+      ).done(function(resp) {
+        min_rpi = resp.min_rpi;
+        max_rpi = resp.max_rpi;
+  
+  
+        if (countryValid && country !== '') {
+          let code = countryNameToCode(country);
+  
+          const promises = resp.resultsArray.map(function(result) {
+            return flightPriceChecker.avg(code, result.iata).then(function(resp) {
+              result.fare = resp.avg;
+              result.fareValid = resp.success && resp.avg > 0;
+  
+              return result;
+            });
           });
-        });
-
-        Promise.all(promises).then(function(results) {
-          console.log(results);
-          let context = {
-            resultsArray: results
-          };
-
-          queryResults.html(entriesTemplate(context, {
-            data: { intl: HANDLEBARS_INTL_DATA }
-          }));
-          $("html, body").animate({scrollTop: 0 }, 600);
-        });
-      } else {
-        $.notify({
-          message: 'The country must be filled in with autocomplete.' 
-        },{
-          type: 'warning'
-        });
-      }
-    }).error(function(error) {
-      console.log(error);
-      domlist.add(errorsDisplay, 'There was an error fetching locations.');
-      $("html, body").animate({scrollTop: 0 }, 600);
-    });
+  
+          Promise.all(promises).then(function(results) {
+            console.log(results);
+            let context = {
+              resultsArray: results
+            };
+  
+            queryResults.html(entriesTemplate(context, {
+              data: { intl: HANDLEBARS_INTL_DATA }
+            }));
+            $("html, body").animate({scrollTop: 0 }, 600);
+          });
+        }
+      }).error(error => {
+        notify('There was an error fetching locations.', notifyLevel.DANGER);
+      });
+    } else {
+      notify('The country must be filled in with autocomplete.', notifyLevel.WARNING);
+    }
   });
 
   $(document).on('click', '#nlc', function() {
@@ -218,10 +228,9 @@ function countryNameToCode(name) {
         }));
         $("html, body").animate({scrollTop: 0 }, 600);
       });
-    }).error(function(error) {
+    }).error(error => {
       console.log(error);
-      domlist.add(errorsDisplay, 'There was an error updating results.');
-      $("html, body").animate({scrollTop: 0 }, 600);
+      notify('There was an error updating results.', notifyLevel.DANGER);
     });
   });
 
