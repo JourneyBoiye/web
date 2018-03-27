@@ -173,8 +173,11 @@ function countryNameToCode(name) {
           $("html, body").animate({scrollTop: 0 }, 600);
         });
       } else {
-        domlist.add(errorsDisplay, 'Your location must be filled in with autocomplete.');
-        $("html, body").animate({scrollTop: 0 }, 600);
+        $.notify({
+          message: 'The country must be filled in with autocomplete.' 
+        },{
+          type: 'warning'
+        });
       }
     }).error(function(error) {
       console.log(error);
