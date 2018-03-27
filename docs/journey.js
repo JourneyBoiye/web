@@ -195,6 +195,14 @@ function countryNameToCode(name) {
     ).done(function(result) {
       console.log(result)
       result.resultsArray = result.docs
+      result.resultsArray.forEach(result => {
+        if (result.rpi < min_rpi) {
+          min_rpi = result.rpi;
+        }
+        if (result.rpi > max_rpi) {
+          max_rpi = result.rpi;
+        }
+      });
       let country = getCountryFromAutocomplete(autocomplete);
       let code = countryNameToCode(country);
 
