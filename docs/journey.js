@@ -60,23 +60,25 @@ const flightPriceChecker = {
   }
 };
 
+function countryAdvisory(tooltip, color) {
+  let safe = '<span class="country-level" title="' + tooltip + '"><i class="fas fa-exclamation-circle" style="color:' + color + '"></i></span>';
+  return new Handlebars.SafeString(safe);
+}
+
 Handlebars.registerHelper("flagLevel", function(level){
-  if (level == 1){
-    return new Handlebars.SafeString("<span title=\"level 1: Excercise normal precautions\"><i class=\"fas fa-exclamation-circle\" style=\"color:green\"></i></span>");
-  }
-  else if (level == 2){
-    return new Handlebars.SafeString("<span title=\"level 2: Excercise increased cautions\"><i class=\"fas fa-exclamation-circle\" style=\"color:orange\"></i></span>");
-  }
-  else if (level == 3){
-    return new Handlebars.SafeString("<span title=\"level 3: Reconsider travel\"><i class=\"fas fa-exclamation-circle\" style=\"color:red\"></i></span>");
-  }
-  else if (level == 4){
-    return new Handlebars.SafeString("<span title=\"level 4: Do not travel\"><i class=\"fas fa-exclamation-circle\" style=\"color:darkred\"></i></span>");
-  }
-  else{
-    return new Handlebars.SafeString("<span title=\"No travel advisories available\"><i class=\"fas fa-question-circle\" style=\"color:yellow\"></i></span>");
+  if (level == 1) {
+    return countryAdvisory('Level 1: Exercise normal precautions', 'green');
+  } else if (level == 2) {
+    return countryAdvisory('Level 2: Exercise increased cautions', 'orange');
+  } else if (level == 3) {
+    return countryAdvisory('Level 3: Reconsider travel', 'red');
+  } else if (level == 4) {
+    return countryAdvisory('Level 4: Do not travel', 'darkred');
+  } else {
+    return countryAdvisory('No travel advisories available', 'yellow');
   }
 });
+
 
 var min_rpi = 300;
 var max_rpi = 0;
@@ -153,7 +155,7 @@ function countryNameToCode(name) {
         const promises = resp.resultsArray.map(function(result) {
           return flightPriceChecker.avg(code, result.iata).then(function(resp) {
             result.fare = resp.avg;
-            result.fareValid = resp.success;
+            result.fareValid = resp.success && resp.avg > 0;
 
             return result;
           });
@@ -171,11 +173,13 @@ function countryNameToCode(name) {
           $("html, body").animate({scrollTop: 0 }, 600);
         });
       } else {
-        domlist.add(errorsDisplay, 'The country must be filled in with autocomplete.');
+        domlist.add(errorsDisplay, 'Your location must be filled in with autocomplete.');
+        $("html, body").animate({scrollTop: 0 }, 600);
       }
     }).error(function(error) {
       console.log(error);
       domlist.add(errorsDisplay, 'There was an error fetching locations.');
+      $("html, body").animate({scrollTop: 0 }, 600);
     });
   });
 
@@ -194,7 +198,7 @@ function countryNameToCode(name) {
       const promises = result.resultsArray.map(function(result) {
         return flightPriceChecker.avg(code, result.iata).then(function(resp) {
           result.fare = resp.avg;
-          result.fareValid = resp.success;
+          result.fareValid = resp.success && resp.avg > 0;
 
           return result;
         });
@@ -213,6 +217,8 @@ function countryNameToCode(name) {
       });
     }).error(function(error) {
       console.log(error);
+      domlist.add(errorsDisplay, 'There was an error updating results.');
+      $("html, body").animate({scrollTop: 0 }, 600);
     });
   });
 

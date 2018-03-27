@@ -3,3 +3,18 @@
     width: 50%;
 }
 
+.country-level {
+    float: right;
+}
+
+.result-fare {
+    margin-left: 10px;
+}
+
+#errors {
+    list-style-type: circle;
+}
+
+#errors li {
+    color: red;
+}

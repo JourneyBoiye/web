@@ -4,8 +4,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>JourneyBoiye - a travel recommendation system</title>
-  <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+
+  <script src="https://use.fontawesome.com/releases/v5.0.7/js/all.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en" defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" defer></script>
+
+  <script src="./js/handlebars-intl.min.js" defer></script>
+  <script src="./js/dist/bundle.js" defer></script>
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
   <link rel="stylesheet" type="text/css" href="style.css">
@@ -51,7 +60,7 @@
             <div class="field">
               <label class="label">Activities that you are interested in</label>
               <div class="control">
-                <input class="input" type="text" placeholder="Activities" id="activities">
+                <input class="input" type="text" placeholder="Activities" id="activities" required>
               </div>
             </div>
             <div class="field">
@@ -91,18 +100,18 @@
     {{#each resultsArray}}
     <div class="box">
       <article class="media">
-<!--         <div class="media-left">
-          <figure class="image is-64x64">
-            <img src="{{icon}}" alt="No Image">
-          </figure>
-        </div> -->
         <div class="media-content">
           <div class="content">
             <p>
-              <strong>{{name}}</strong>
-              ({{country}} {{flagLevel level}} {{region}})
-              <i class="fas fa-plane"></i>
-              {{formatNumber fare style="currency" currency="USD"}}
+              <strong>{{name}}</strong>, {{country}}, {{region}}
+
+              {{#if fareValid}}
+                <i class="fas fa-plane result-fare"></i>
+                {{formatNumber fare style="currency" currency="USD"}}
+              {{/if}}
+
+              {{flagLevel level}}
+
               <br> {{text}}
             </p>
           </div>
@@ -110,28 +119,23 @@
       </article>
     </div>
     {{else}}
-    <h2>No results found...</h2>
+      <h2>No results found...</h2>
     {{/each}}
-    
 
-     <label class="label">How were these results?</label>
+    {{#if resultsArray}}
+      <label class="label">How were these results?</label>
       <div class="columns">
         <div class="column is-three-quarters">
-       <input class="input" type="text" id="feedback">
-     </div>
-      <div class="column" id="nlc">
-        <button class="button is-primary">Update results</button>
+          <input class="input" type="text" id="feedback">
+        </div>
+        <div class="column" id="nlc">
+          <button class="button is-primary">Update results</button>
+          </div>
       </div>
-    </div>
+    {{/if}}
 
   </script>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="./js/handlebars-intl.min.js"></script>
-
-  <script src="./js/dist/bundle.js"></script>
 </body>
 
 </html>
