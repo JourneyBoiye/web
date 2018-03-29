@@ -75,7 +75,7 @@ const flightPriceChecker = {
 };
 
 function countryAdvisory(tooltip, color) {
-  let safe = '<span class="country-level" title="' + tooltip + '"><i class="fas fa-exclamation-circle" style="color:' + color + '"></i></span>';
+  let safe = '<span class="right" title="' + tooltip + '"><i class="fas fa-exclamation-circle" style="color:' + color + '"></i></span>';
   return new Handlebars.SafeString(safe);
 }
 
