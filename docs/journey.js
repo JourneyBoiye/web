@@ -75,7 +75,7 @@ const flightPriceChecker = {
 };
 
 function countryAdvisory(tooltip, color) {
-  let safe = '<span class="country-level" title="' + tooltip + '"><i class="fas fa-exclamation-circle" style="color:' + color + '"></i></span>';
+  let safe = '<span class="right" title="' + tooltip + '"><i class="fas fa-exclamation-circle" style="color:' + color + '"></i></span>';
   return new Handlebars.SafeString(safe);
 }
 
@@ -154,6 +154,9 @@ function countryNameToCode(name) {
 
     domlist.clear(errorsDisplay);
 
+    
+    $('#submitBtn').toggleClass("is-loading", true);
+
     const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
     if (countryValid && country !== '') {
       var queryResults = $('#entries');
@@ -185,19 +188,26 @@ function countryNameToCode(name) {
             queryResults.html(entriesTemplate(context, {
               data: { intl: HANDLEBARS_INTL_DATA }
             }));
+            $('#submitBtn').toggleClass("is-loading", false);
             $("html, body").animate({scrollTop: 0 }, 600);
           });
         }
       }).error(error => {
+        $('#submitBtn').toggleClass("is-loading", false);
         notify('There was an error fetching locations.', notifyLevel.DANGER);
       });
     } else {
+      $('#submitBtn').toggleClass("is-loading", false);
       notify('The country must be filled in with autocomplete.', notifyLevel.WARNING);
     }
+
+    
   });
 
   $(document).on('click', '#nlc', function() {
     domlist.clear(errorsDisplay);
+
+    $('#feedbackBtn').toggleClass("is-loading", true);
 
     var queryResults = $('#entries');
     journeyBoiye.update(
@@ -231,12 +241,16 @@ function countryNameToCode(name) {
         queryResults.html(entriesTemplate(context, {
           data: { intl: HANDLEBARS_INTL_DATA }
         }));
+        $('#feedbackBtn').toggleClass("is-loading", false);
         $("html, body").animate({scrollTop: 0 }, 600);
       });
     }).error(error => {
+      $('#feedbackBtn').toggleClass("is-loading", false);
       console.log(error);
       notify('There was an error updating results.', notifyLevel.DANGER);
     });
+
+
   });
 
   $(document).ready(function() {
