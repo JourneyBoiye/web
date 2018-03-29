@@ -11,6 +11,7 @@
   "dependencies": {
     "assert": "^1.4.1",
     "country-data": "0.0.31",
+    "npm": "^5.8.0",
     "webpack": "^4.1.0",
     "webpack-cli": "^2.0.10"
   },

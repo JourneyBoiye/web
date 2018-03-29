@@ -1,7 +1,5 @@
 import { countries } from 'country-data';
 import { normalizer } from './js/country.js';
-import * as domlist from './js/domlist.js';
-
 
 /**
  * Web application
@@ -151,9 +149,6 @@ function countryNameToCode(name) {
   // reload entries on success
   $(document).on('submit', '#addEntry', function(e) {
     e.preventDefault();
-
-    domlist.clear(errorsDisplay);
-
     
     $('#submitBtn').toggleClass("is-loading", true);
 
@@ -205,8 +200,6 @@ function countryNameToCode(name) {
   });
 
   $(document).on('click', '#nlc', function() {
-    domlist.clear(errorsDisplay);
-
     $('#feedbackBtn').toggleClass("is-loading", true);
 
     var queryResults = $('#entries');
