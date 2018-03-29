@@ -193,16 +193,13 @@ function countryNameToCode(name) {
     journeyBoiye.update(
       $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
     ).done(function(result) {
-      console.log(result)
-      result.resultsArray = result.docs
-      result.resultsArray.forEach(result => {
-        if (result.rpi < min_rpi) {
-          min_rpi = result.rpi;
-        }
-        if (result.rpi > max_rpi) {
-          max_rpi = result.rpi;
-        }
-      });
+      // Conform to handlebar template
+      result.resultsArray = result.docs;
+      // Only update the min/max rpi if we have new values from db
+      if (result.resultsArray.length != 0) {
+        min_rpi = result.min_rpi;
+        max_rpi = result.max_rpi;
+      }
       let country = getCountryFromAutocomplete(autocomplete);
       let code = countryNameToCode(country);
 
