@@ -1,5 +1,7 @@
 import { countries } from 'country-data';
+
 import { normalizer } from './js/country.js';
+import flightPriceAvgs from './js/flight-price-checker.js';
 
 /**
  * Web application
@@ -53,22 +55,6 @@ const journeyBoiye = {
       }),
       dataType: 'json',
     })
-  }
-};
-
-const flightPriceCheckerUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/grioni.2%40osu.edu_dev/flights/flight-price-check.json';
-const flightPriceChecker = {
-  avg(from, to) {
-    return $.ajax({
-      type: 'GET',
-      url: flightPriceCheckerUrl,
-      contentType: 'application/json; charset=utf-8',
-      data: {
-        "iataFrom": from,
-        "iataTo": to
-      },
-      dataType: 'json'
-    });
   }
 };
 
@@ -154,39 +140,39 @@ function countryNameToCode(name) {
 
     const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
     if (countryValid && country !== '') {
-      var queryResults = $('#entries');
+      let queryResults = $('#entries');
+
       journeyBoiye.add(
         $('#activities').val().trim()
       ).done(function(resp) {
         min_rpi = resp.min_rpi;
         max_rpi = resp.max_rpi;
   
-  
-        if (countryValid && country !== '') {
-          let code = countryNameToCode(country);
-  
-          const promises = resp.resultsArray.map(function(result) {
-            return flightPriceChecker.avg(code, result.iata).then(function(resp) {
-              result.fare = resp.avg;
-              result.fareValid = resp.success && resp.avg > 0;
-  
-              return result;
-            });
+        let code = countryNameToCode(country);
+        let iatas = resp.resultsArray.map(result => result.iata);
+
+        flightPriceAvgs(code, iatas).then(function(avgsResp) {
+          let avgs = avgsResp.avgs;
+
+          let augmentedResults = resp.resultsArray.map(function(result, i) {
+            let avg = avgs[i];
+            result.fare = avg.avg;
+            result.fareValid = avg.success && avg.size > 0;
+
+            return result;
           });
-  
-          Promise.all(promises).then(function(results) {
-            console.log(results);
-            let context = {
-              resultsArray: results
-            };
-  
-            queryResults.html(entriesTemplate(context, {
-              data: { intl: HANDLEBARS_INTL_DATA }
-            }));
-            $('#submitBtn').toggleClass("is-loading", false);
-            $("html, body").animate({scrollTop: 0 }, 600);
-          });
-        }
+
+          let context = {
+            resultsArray: augmentedResults
+          };
+
+          queryResults.html(entriesTemplate(context, {
+            data: { intl: HANDLEBARS_INTL_DATA }
+          }));
+
+          $('#submitBtn').toggleClass("is-loading", false);
+          $("html, body").animate({scrollTop: 0 }, 600);
+        });
       }).error(error => {
         $('#submitBtn').toggleClass("is-loading", false);
         notify('There was an error fetching locations.', notifyLevel.DANGER);
