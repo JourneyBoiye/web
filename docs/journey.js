@@ -116,6 +116,11 @@ function countryNameToCode(name) {
 }
 
 (function() {
+  // If type=date not available, use jQuery's datepicker instead.
+  if ( $('[type="date"]').prop('type') != 'date' ) {
+    $('[type="date"]').datepicker();
+  }
+
   var cityInput = document.getElementById('city');
   var autocomplete = new google.maps.places.Autocomplete(cityInput,
      {types: ['(cities)']});
