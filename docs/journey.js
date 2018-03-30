@@ -197,32 +197,48 @@ function countryNameToCode(name) {
     journeyBoiye.update(
       $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
     ).done(function(result) {
-      console.log(result)
-      result.resultsArray = result.docs
-      let country = getCountryFromAutocomplete(autocomplete);
-      let code = countryNameToCode(country);
+      // Only update the min/max rpi if we have new values from db
+      if (result.docs.length != 0) {
+        min_rpi = result.min_rpi;
+        max_rpi = result.max_rpi;
+        let country = getCountryFromAutocomplete(autocomplete);
+        let code = countryNameToCode(country);
+        let iatas = result.docs.map(result => result.iata);
 
-      const promises = result.resultsArray.map(function(result) {
-        return flightPriceChecker.avg(code, result.iata).then(function(resp) {
-          result.fare = resp.avg;
-          result.fareValid = resp.success && resp.avg > 0;
+        flightPriceAvgs(code, iatas).then(function(avgsResp) {
+          let avgs = avgsResp.avgs;
 
-          return result;
+          let augmentedResults = result.docs.map(function(result, i) {
+            let avg = avgs[i];
+            result.fare = avg.avg;
+            result.fareValid = avg.success && avg.size > 0;
+
+            return result;
+          });
+
+          let context = {
+            resultsArray: augmentedResults
+          };
+
+          queryResults.html(entriesTemplate(context, {
+            data: { intl: HANDLEBARS_INTL_DATA }
+          }));
+
+          $('#submitBtn').toggleClass("is-loading", false);
+          $("html, body").animate({scrollTop: 0 }, 600);
         });
-      });
-
-      Promise.all(promises).then(function(results) {
-        console.log(results);
+      } else {
         let context = {
-          resultsArray: results
+          resultsArray: [] 
         };
 
         queryResults.html(entriesTemplate(context, {
           data: { intl: HANDLEBARS_INTL_DATA }
         }));
-        $('#feedbackBtn').toggleClass("is-loading", false);
+
+        $('#submitBtn').toggleClass("is-loading", false);
         $("html, body").animate({scrollTop: 0 }, 600);
-      });
+      }
     }).error(error => {
       $('#feedbackBtn').toggleClass("is-loading", false);
       console.log(error);
