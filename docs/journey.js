@@ -1,6 +1,8 @@
 import { countries } from 'country-data';
 
 import { normalizer } from './js/country.js';
+import * as validators from './js/validators.js';
+import { getCountryFromAutocomplete } from './js/util.js';
 import flightPriceAvgs from './js/flight-price-checker.js';
 
 /**
@@ -80,25 +82,6 @@ Handlebars.registerHelper("flagLevel", function(level){
 
 var min_rpi = 300;
 var max_rpi = 0;
-function getCountryFromAutocomplete(autocomplete) {
-  let place = autocomplete.getPlace();
-  let country = '';
-
-  if (place !== undefined && place !== null) {
-    let lastIndex = place.address_components.length - 1;
-    let lastComponent = place.address_components[lastIndex]
-
-    for (let i = 0; i < lastComponent.types.length; i++) {
-      let type = lastComponent.types[i];
-      if (type === 'country') {
-        country = lastComponent.long_name;
-        break;
-      }
-    }
-  }
-
-  return country;
-}
 
 function countryNameToCode(name) {
   let code = '';
@@ -113,6 +96,24 @@ function countryNameToCode(name) {
   }
 
   return code;
+}
+
+function runValidators(validators) {
+  let msgs = [];
+  for (let validator of validators) {
+    let res = validator();
+    msgs.push.apply(msgs, res);
+  }
+
+  return msgs;
+}
+
+function validateCountryInput(autocomplete, countryValid) {
+  if (countryValid) {
+    return validators.validateAutocomplete(autocomplete)
+  }
+
+  return ['Please enter location with autocomplete'];
 }
 
 (function() {
@@ -134,6 +135,18 @@ function countryNameToCode(name) {
   });
 
   let errorsDisplay = $('#errors');
+  let startDate = $('#start-date');
+  let endDate = $('#end-date');
+  let ageInput = $('#age');
+  let budgetInput = $('#budget');
+
+  const VALIDATORS = [
+    () => validators.validateDates(startDate, endDate),
+    () => validators.validateAge(ageInput, 5, 123),
+    () => validators.validateBudget(budgetInput, 400),
+    () => validateCountryInput(autocomplete, countryValid)
+  ];
+
   let entriesTemplate;
 
   // intercept the click on the submit button, add the journeyboiye entry and
@@ -143,60 +156,63 @@ function countryNameToCode(name) {
     
     $('#submitBtn').toggleClass("is-loading", true);
 
-    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
-    if (countryValid && country !== '') {
-      let queryResults = $('#entries');
+    let msgs = runValidators(VALIDATORS);
+    if (msgs.length > 0) {
+      for (let msg of msgs) {
+        notify(msg, notifyLevel.DANGER);
+      }
 
-      journeyBoiye.add(
-        $('#activities').val().trim()
-      ).done(function(resp) {
-        if (resp.resultsArray.length === 0) {
-          queryResults.html(entriesTemplate(resp, {
-            data: { intl: HANDLEBARS_INTL_DATA }
-          }));
-
-          $('#submitBtn').toggleClass("is-loading", false);
-          $("html, body").animate({scrollTop: 0 }, 600);
-        } else {
-          min_rpi = resp.min_rpi;
-          max_rpi = resp.max_rpi;
-
-          let code = countryNameToCode(country);
-          let iatas = resp.resultsArray.map(result => result.iata);
-
-          flightPriceAvgs(code, iatas).then(function(avgsResp) {
-            let avgs = avgsResp.avgs;
-
-            let augmentedResults = resp.resultsArray.map(function(result, i) {
-              let avg = avgs[i];
-              result.fare = avg.avg;
-              result.fareValid = avg.success && avg.size > 0;
-
-              return result;
-            });
-
-            let context = {
-              resultsArray: augmentedResults
-            };
-
-            queryResults.html(entriesTemplate(context, {
-              data: { intl: HANDLEBARS_INTL_DATA }
-            }));
-
-            $('#submitBtn').toggleClass("is-loading", false);
-            $("html, body").animate({scrollTop: 0 }, 600);
-          });
-        }
-      }).error(error => {
-        $('#submitBtn').toggleClass("is-loading", false);
-        notify('There was an error fetching locations.', notifyLevel.DANGER);
-      });
-    } else {
       $('#submitBtn').toggleClass("is-loading", false);
-      notify('The country must be filled in with autocomplete.', notifyLevel.WARNING);
+      return;
     }
 
-    
+    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
+    let queryResults = $('#entries');
+
+    journeyBoiye.add(
+      $('#activities').val().trim()
+    ).done(function(resp) {
+      if (resp.resultsArray.length === 0) {
+        queryResults.html(entriesTemplate(resp, {
+          data: { intl: HANDLEBARS_INTL_DATA }
+        }));
+
+        $('#submitBtn').toggleClass("is-loading", false);
+        $("html, body").animate({scrollTop: 0 }, 600);
+      } else {
+        min_rpi = resp.min_rpi;
+        max_rpi = resp.max_rpi;
+
+        let code = countryNameToCode(country);
+        let iatas = resp.resultsArray.map(result => result.iata);
+
+        flightPriceAvgs(code, iatas).then(function(avgsResp) {
+          let avgs = avgsResp.avgs;
+
+          let augmentedResults = resp.resultsArray.map(function(result, i) {
+            let avg = avgs[i];
+            result.fare = avg.avg;
+            result.fareValid = avg.success && avg.size > 0;
+
+            return result;
+          });
+
+          let context = {
+            resultsArray: augmentedResults
+          };
+
+          queryResults.html(entriesTemplate(context, {
+            data: { intl: HANDLEBARS_INTL_DATA }
+          }));
+        });
+
+        $('#submitBtn').toggleClass("is-loading", false);
+        $("html, body").animate({scrollTop: 0 }, 600);
+      }
+    }).error(error => {
+      $('#submitBtn').toggleClass("is-loading", false);
+      notify('There was an error fetching locations.', notifyLevel.DANGER);
+    });
   });
 
   $(document).on('click', '#nlc', function() {
