@@ -201,58 +201,67 @@ function countryNameToCode(name) {
 
   $(document).on('click', '#nlc', function() {
     $('#feedbackBtn').toggleClass("is-loading", true);
+    
+    var feedback_input = $('#feedback');
+    if (feedback_input[0].checkValidity()){
+      var queryResults = $('#entries');
+      journeyBoiye.update(
+        $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
+      ).done(function(result) {
+        // Only update the min/max rpi if we have new values from db
+        if (result.docs.length != 0) {
+          min_rpi = result.min_rpi;
+          max_rpi = result.max_rpi;
+          let country = getCountryFromAutocomplete(autocomplete);
+          let code = countryNameToCode(country);
+          let iatas = result.docs.map(result => result.iata);
 
-    var queryResults = $('#entries');
-    journeyBoiye.update(
-      $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
-    ).done(function(result) {
-      // Only update the min/max rpi if we have new values from db
-      if (result.docs.length != 0) {
-        min_rpi = result.min_rpi;
-        max_rpi = result.max_rpi;
-        let country = getCountryFromAutocomplete(autocomplete);
-        let code = countryNameToCode(country);
-        let iatas = result.docs.map(result => result.iata);
+          flightPriceAvgs(code, iatas).then(function(avgsResp) {
+            let avgs = avgsResp.avgs;
 
-        flightPriceAvgs(code, iatas).then(function(avgsResp) {
-          let avgs = avgsResp.avgs;
+            let augmentedResults = result.docs.map(function(result, i) {
+              let avg = avgs[i];
+              result.fare = avg.avg;
+              result.fareValid = avg.success && avg.size > 0;
 
-          let augmentedResults = result.docs.map(function(result, i) {
-            let avg = avgs[i];
-            result.fare = avg.avg;
-            result.fareValid = avg.success && avg.size > 0;
+              return result;
+            });
 
-            return result;
+            let context = {
+              resultsArray: augmentedResults
+            };
+
+            queryResults.html(entriesTemplate(context, {
+              data: { intl: HANDLEBARS_INTL_DATA }
+            }));
           });
 
+          $('#submitBtn').toggleClass("is-loading", false);
+          $("html, body").animate({scrollTop: 0 }, 600);
+        } else {
           let context = {
-            resultsArray: augmentedResults
+            resultsArray: [] 
           };
 
           queryResults.html(entriesTemplate(context, {
             data: { intl: HANDLEBARS_INTL_DATA }
           }));
-        });
 
-        $('#submitBtn').toggleClass("is-loading", false);
-        $("html, body").animate({scrollTop: 0 }, 600);
-      } else {
-        let context = {
-          resultsArray: [] 
-        };
+          $('#submitBtn').toggleClass("is-loading", false);
+          $("html, body").animate({scrollTop: 0 }, 600);
+        }
+      }).error(error => {
+        $('#feedbackBtn').toggleClass("is-loading", false);
+        console.log(error);
+        notify('There was an error updating results.', notifyLevel.DANGER);
+      });
 
-        queryResults.html(entriesTemplate(context, {
-          data: { intl: HANDLEBARS_INTL_DATA }
-        }));
-
-        $('#submitBtn').toggleClass("is-loading", false);
-        $("html, body").animate({scrollTop: 0 }, 600);
-      }
-    }).error(error => {
+    } else {
       $('#feedbackBtn').toggleClass("is-loading", false);
-      console.log(error);
-      notify('There was an error updating results.', notifyLevel.DANGER);
-    });
+      notify('Feedback for the result cannot be empty.', notifyLevel.DANGER);
+      console.log("Invalid feedback input (empty)");
+    }
+
 
 
   });
