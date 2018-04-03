@@ -15,10 +15,10 @@
     margin-left: 10px;
 }
 
-#errors {
-    list-style-type: circle;
+ul {
+    list-style: disc;
 }
 
-#errors li {
-    color: red;
+#help-popup {
+    float: right;
 }

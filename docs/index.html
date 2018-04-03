@@ -15,10 +15,11 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" defer></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" defer></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" defer></script>
   <script src="https://use.fontawesome.com/releases/v5.0.7/js/all.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js" defer></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en" defer></script>
   <script src="https://cdn.rawgit.com/mouse0270/bootstrap-notify/3.1.3/bootstrap-notify.min.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwZaqBJiUhWRoACHVe8p0rkNbmIDvdxo8&libraries=places&language=en" defer></script>
 
   <script src="./js/handlebars-intl.min.js" defer></script>
   <script src="./js/helpers.js" defer></script>
@@ -26,6 +27,45 @@
 </head>
 
 <body>
+  <!-- Button to enlist help -->
+	<button type="button" id="help-popup" class="btn btn-link" data-toggle="modal" data-target="#help-modal">
+		Help
+	</button>
+
+  <!-- Modal window for help -->
+	<div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">JourneyBoiye Help</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Welcome To JourneyBoiye, an attempt at a travel assistant for the Watson
+          based capstone class at Ohio State. To get started input your info into
+          the form on the right and see results on the left. Some examples of
+          queries might be <em>wine tasting</em>, <em>hiking in the rainforest</em>,
+          or <em>beaches and grilling outside</em>. Some top results are displayed
+          to the user, and then the user can comment on these results to redirect
+          their search in a certain direction. Right now, we are able to classify
+          text regarding price increases and decreases and distance increases and
+          decreases. However, currently we have not been able to integrate data
+          for distances between locations, so only price is considered for now.
+          <br><br>
+
+					Note, that each feedback response will build off the last one, so results
+          narrow down quickly. To start over again, try a new query.
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
   <section class="section">
     <div class="container">
       <div class="columns">
@@ -128,7 +168,25 @@
         </article>
       </div>
     {{else}}
-      <h2>No results found...</h2>
+      <h2>No results found...</h2><br>
+      <h4>Helpful Tips</h4>
+      <div>
+        <span>If you are having difficulties getting good results, try some of the following queries</span>
+        <ul>
+          <li><em>hiking in the rainforest</em></li>
+          <li><em>wine tasting</em></li>
+          <li><em>hispanic culture</em></li>
+          <li><em>indigenous peoples</em></li>
+        </ul>
+        <br>
+
+        <span>If you are having difficulties filtering results, try some of the following filters</span>
+        <ul>
+          <li><em>these are too expensive for me</em></li>
+          <li><em>I want to go somewhere nicer</em></li>
+          <li><em>are there cheaper options</em></li>
+        </ul>
+      </div>
     {{/each}}
 
     {{#if resultsArray}}

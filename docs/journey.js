@@ -150,34 +150,43 @@ function countryNameToCode(name) {
       journeyBoiye.add(
         $('#activities').val().trim()
       ).done(function(resp) {
-        min_rpi = resp.min_rpi;
-        max_rpi = resp.max_rpi;
-  
-        let code = countryNameToCode(country);
-        let iatas = resp.resultsArray.map(result => result.iata);
-
-        flightPriceAvgs(code, iatas).then(function(avgsResp) {
-          let avgs = avgsResp.avgs;
-
-          let augmentedResults = resp.resultsArray.map(function(result, i) {
-            let avg = avgs[i];
-            result.fare = avg.avg;
-            result.fareValid = avg.success && avg.size > 0;
-
-            return result;
-          });
-
-          let context = {
-            resultsArray: augmentedResults
-          };
-
-          queryResults.html(entriesTemplate(context, {
+        if (resp.resultsArray.length === 0) {
+          queryResults.html(entriesTemplate(resp, {
             data: { intl: HANDLEBARS_INTL_DATA }
           }));
 
           $('#submitBtn').toggleClass("is-loading", false);
           $("html, body").animate({scrollTop: 0 }, 600);
-        });
+        } else {
+          min_rpi = resp.min_rpi;
+          max_rpi = resp.max_rpi;
+
+          let code = countryNameToCode(country);
+          let iatas = resp.resultsArray.map(result => result.iata);
+
+          flightPriceAvgs(code, iatas).then(function(avgsResp) {
+            let avgs = avgsResp.avgs;
+
+            let augmentedResults = resp.resultsArray.map(function(result, i) {
+              let avg = avgs[i];
+              result.fare = avg.avg;
+              result.fareValid = avg.success && avg.size > 0;
+
+              return result;
+            });
+
+            let context = {
+              resultsArray: augmentedResults
+            };
+
+            queryResults.html(entriesTemplate(context, {
+              data: { intl: HANDLEBARS_INTL_DATA }
+            }));
+
+            $('#submitBtn').toggleClass("is-loading", false);
+            $("html, body").animate({scrollTop: 0 }, 600);
+          });
+        }
       }).error(error => {
         $('#submitBtn').toggleClass("is-loading", false);
         notify('There was an error fetching locations.', notifyLevel.DANGER);
@@ -223,10 +232,10 @@ function countryNameToCode(name) {
           queryResults.html(entriesTemplate(context, {
             data: { intl: HANDLEBARS_INTL_DATA }
           }));
-
-          $('#submitBtn').toggleClass("is-loading", false);
-          $("html, body").animate({scrollTop: 0 }, 600);
         });
+
+        $('#submitBtn').toggleClass("is-loading", false);
+        $("html, body").animate({scrollTop: 0 }, 600);
       } else {
         let context = {
           resultsArray: [] 
