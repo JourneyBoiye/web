@@ -13,6 +13,8 @@ const HANDLEBARS_INTL_DATA = {
 };
 HandlebarsIntl.registerWith(Handlebars);
 
+const DATE_PICKER_FORMAT = 'YYYY-MM-DD';
+
 const notifyLevel = Object.freeze({
   SUCCESS: 'success',
   INFO: 'info',
@@ -31,7 +33,7 @@ const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_d
 const feedbackServiceEndpoint = 'https://openwhisk.ng.bluemix.net/api/v1/web/lan.74%40osu.edu_dev/feedback/feedback-service.json'
 const journeyBoiye = {
   // add a single journeyBoiye entry
-  add(activities) {
+  add(activities, dailyBudget) {
     console.log('Sending', activities)
     return $.ajax({
       type: 'POST',
@@ -116,6 +118,21 @@ function validateCountryInput(autocomplete, countryValid) {
   return ['Please enter location with autocomplete'];
 }
 
+const calculateDailyBudget = () => {
+  let startDate = $('#start-date');
+  let endDate = $('#end-date');
+  let startStr = startDate.val();
+  let endStr = endDate.val();
+  let start = moment(startStr, DATE_PICKER_FORMAT);
+  let end = moment(endStr, DATE_PICKER_FORMAT);
+  var duration = moment.duration(end.diff(start));
+  var days = duration.asDays();
+
+  let budgetInput = $('#budget');
+  let budget = budgetInput.val();
+  return budget / (days + 1);
+}
+
 (function() {
   // If type=date not available, use jQuery's datepicker instead.
   if ( $('[type="date"]').prop('type') != 'date' ) {
@@ -168,9 +185,11 @@ function validateCountryInput(autocomplete, countryValid) {
 
     const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
     let queryResults = $('#entries');
+    const dailyBudget = calculateDailyBudget();
 
     journeyBoiye.add(
-      $('#activities').val().trim()
+      $('#activities').val().trim(),
+      dailyBudget
     ).done(function(resp) {
       if (resp.resultsArray.length === 0) {
         queryResults.html(entriesTemplate(resp, {
