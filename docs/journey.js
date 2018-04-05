@@ -204,10 +204,10 @@ function validateCountryInput(autocomplete, countryValid) {
           queryResults.html(entriesTemplate(context, {
             data: { intl: HANDLEBARS_INTL_DATA }
           }));
-        });
 
-        $('#submitBtn').toggleClass("is-loading", false);
-        $("html, body").animate({scrollTop: 0 }, 600);
+          $('#submitBtn').toggleClass("is-loading", false);
+          $("html, body").animate({scrollTop: 0 }, 600);
+        });
       }
     }).error(error => {
       $('#submitBtn').toggleClass("is-loading", false);
@@ -250,10 +250,10 @@ function validateCountryInput(autocomplete, countryValid) {
             queryResults.html(entriesTemplate(context, {
               data: { intl: HANDLEBARS_INTL_DATA }
             }));
-          });
 
-          $('#submitBtn').toggleClass("is-loading", false);
-          $("html, body").animate({scrollTop: 0 }, 600);
+            $('#submitBtn').toggleClass("is-loading", false);
+            $("html, body").animate({scrollTop: 0 }, 600);
+          });
         } else {
           let context = {
             resultsArray: [] 
@@ -277,9 +277,6 @@ function validateCountryInput(autocomplete, countryValid) {
       notify('Feedback for the result cannot be empty.', notifyLevel.DANGER);
       console.log("Invalid feedback input (empty)");
     }
-
-
-
   });
 
   $(document).ready(function() {
