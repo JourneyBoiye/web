@@ -162,12 +162,10 @@ const calculateDays = () => {
   let errorsDisplay = $('#errors');
   let startDate = $('#start-date');
   let endDate = $('#end-date');
-  let ageInput = $('#age');
   let budgetInput = $('#budget');
 
   const VALIDATORS = [
     () => validators.validateDates(startDate, endDate),
-    () => validators.validateAge(ageInput, 5, 123),
     () => validators.validateBudget(budgetInput, 400),
     () => validateCountryInput(autocomplete, countryValid)
   ];

@@ -22,29 +22,6 @@ function validateDates(startDate, endDate) {
   return msgs;
 }
 
-function validateAge(ageInput, min, max) {
-  let ageStr = ageInput.val();
-
-  let msgs = [];
-  if (!/^\d+$/.test(ageStr)) {
-    msgs.push('Only put digits 0-9 in age');
-
-    return msgs;
-  }
-
-  let num = parseInt(ageStr);
-  if (num > max) {
-    msgs.push('You should contact Guiness book of world records! You may be ' +
-      'older than Jeanne Calment, the oldest confirmed person ever. ' +
-      'Keep it going! Now please put in your real age.');
-  } else if (num <= min) {
-    msgs.push('Thinking of crossing off the bucket list early? What a ' +
-      'go-getter. Please have an adult help you, or stop lying about your age.');
-  }
-
-  return msgs;
-}
-
 function validateBudget(budgetInput, lower) {
   let budgetStr = budgetInput.val();
 
