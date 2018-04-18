@@ -33,7 +33,7 @@ const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_d
 const feedbackServiceEndpoint = 'https://openwhisk.ng.bluemix.net/api/v1/web/lan.74%40osu.edu_dev/feedback/feedback-service.json'
 const journeyBoiye = {
   // add a single journeyBoiye entry
-  add(activities, dailyBudget, code) {
+  add(activities, budget, days, iataFrom) {
     console.log('Sending', activities)
     return $.ajax({
       type: 'POST',
@@ -43,7 +43,7 @@ const journeyBoiye = {
         activities,
         budget,
         days,
-        code
+        iataFrom,
       }),
       dataType: 'json',
     });
@@ -85,8 +85,8 @@ Handlebars.registerHelper("flagLevel", function(level){
 });
 
 
-var min_rpi = 300;
-var max_rpi = 0;
+var min_rpi = Infinity;
+var max_rpi = -Infinity;
 
 function countryNameToCode(name) {
   let code = '';
@@ -140,6 +140,7 @@ const calculateDays = () => {
     $('[type="date"]').datepicker();
   }
 
+
   var cityInput = document.getElementById('city');
   var autocomplete = new google.maps.places.Autocomplete(cityInput,
      {types: ['(cities)']});
@@ -150,6 +151,12 @@ const calculateDays = () => {
   });
   google.maps.event.addListener(autocomplete, 'place_changed', function() {
     countryValid = true;
+  });
+
+  $(document).keydown(function(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
   });
 
   let errorsDisplay = $('#errors');
@@ -187,7 +194,7 @@ const calculateDays = () => {
     let queryResults = $('#entries');
     const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
     const days = calculateDays();
-    const budget = budget.val();
+    const budget = parseInt(budgetInput.val());
     const code = countryNameToCode(country);
 
     journeyBoiye.add(
@@ -238,7 +245,7 @@ const calculateDays = () => {
       journeyBoiye.update(
         $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
       ).done(function(result) {
-        // Only update the min/max rpi if we have new values from db
+        // Only update the min/max diff if we have new values from db
         if (result.docs.length != 0) {
           min_rpi = result.min_rpi;
           max_rpi = result.max_rpi;
