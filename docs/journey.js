@@ -174,6 +174,11 @@ const calculateDays = () => {
   let endDate = $('#end-date');
   let budgetInput = $('#budget');
 
+  let lastActivities;
+  let lastDays;
+  let lastBudget;
+  let lastIataFrom;
+
   const VALIDATORS = [
     () => validators.validateDates(startDate, endDate),
     () => validators.validateBudget(budgetInput, 400),
@@ -204,6 +209,11 @@ const calculateDays = () => {
     const days = calculateDays();
     const budget = parseInt(budgetInput.val());
     const code = countryNameToCode(country);
+
+    lastActivities = $('#activities').val().trim();
+    lastDays = days;
+    lastBudget = budget;
+    lastIataFrom = code;
 
     journeyBoiye.add(
       $('#activities').val().trim(),
@@ -245,18 +255,14 @@ const calculateDays = () => {
   });
 
   $(document).on('click', '#nlc', function() {
-    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
-    const days = calculateDays();
-    const budget = parseInt(budgetInput.val());
-    const code = countryNameToCode(country);
-
     $('#feedbackBtn').toggleClass("is-loading", true);
 
     var feedback_input = $('#feedback');
     if (feedback_input[0].checkValidity()){
       var queryResults = $('#entries');
       journeyBoiye.update(
-        $('#feedback').val().trim(), budget, days, code, min_rpi, max_rpi, $('#activities').val().trim()
+        $('#feedback').val().trim(), lastBudget, lastDays, lastIataFrom, min_rpi,
+          max_rpi, lastActivities
       ).done(function(result) {
         // Only update the min/max diff if we have new values from db
         if (result.docs.length != 0) {
