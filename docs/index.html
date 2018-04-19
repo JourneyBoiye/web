@@ -143,10 +143,8 @@
             <div class="content">
               <strong>{{name}}</strong>, {{country}}, {{region}}
 
-              {{#if avg.fareValid}}
-                <i class="fas fa-plane result-fare"></i>
-                {{formatNumber avg.avg style="currency" currency="USD"}}
-              {{/if}}
+              <i class="fas fa-dollar-sign result-fare"></i>
+              {{formatNumber totalCost currency="USD"}}
 
               {{flagLevel level}}
 
