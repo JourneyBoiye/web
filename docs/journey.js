@@ -146,12 +146,19 @@ const calculateDays = () => {
      {types: ['(cities)']});
 
   let countryValid = false;
-  $(cityInput).change(function() {
-    countryValid = false;
-  });
   google.maps.event.addListener(autocomplete, 'place_changed', function() {
     countryValid = true;
   });
+  google.maps.event.addDomListener(cityInput, 'keydown', function(e) {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        countryValid = true;
+    // All alphanumeric characters add to country text.
+    } else if (e.keyCode >= 47) {
+      countryValid = false;
+    }
+  });
+
 
   $(document).keydown(function(e) {
     if (e.keyCode === 13) {
@@ -162,12 +169,10 @@ const calculateDays = () => {
   let errorsDisplay = $('#errors');
   let startDate = $('#start-date');
   let endDate = $('#end-date');
-  let ageInput = $('#age');
   let budgetInput = $('#budget');
 
   const VALIDATORS = [
     () => validators.validateDates(startDate, endDate),
-    () => validators.validateAge(ageInput, 5, 123),
     () => validators.validateBudget(budgetInput, 400),
     () => validateCountryInput(autocomplete, countryValid)
   ];
