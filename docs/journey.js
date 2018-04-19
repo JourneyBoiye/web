@@ -48,7 +48,7 @@ const journeyBoiye = {
       dataType: 'json',
     });
   },
-  update(feedback, min_rpi, max_rpi, activities) {
+  update(feedback, budget, days, iataFrom, min_rpi, max_rpi, activities) {
     console.log('Sending', feedback);
     return $.ajax({
       type: 'POST',
@@ -56,9 +56,12 @@ const journeyBoiye = {
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify({
         "feedback": feedback,
+        "budget": budget,
+        "days": days,
+        "iataFrom": iataFrom,
         "min_rpi": min_rpi,
         "max_rpi": max_rpi,
-        "activities": activities
+        "activities": activities,
       }),
       dataType: 'json',
     })
@@ -242,13 +245,18 @@ const calculateDays = () => {
   });
 
   $(document).on('click', '#nlc', function() {
+    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
+    const days = calculateDays();
+    const budget = parseInt(budgetInput.val());
+    const code = countryNameToCode(country);
+
     $('#feedbackBtn').toggleClass("is-loading", true);
-    
+
     var feedback_input = $('#feedback');
     if (feedback_input[0].checkValidity()){
       var queryResults = $('#entries');
       journeyBoiye.update(
-        $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
+        $('#feedback').val().trim(), budget, days, code, min_rpi, max_rpi, $('#activities').val().trim()
       ).done(function(result) {
         // Only update the min/max diff if we have new values from db
         if (result.docs.length != 0) {
