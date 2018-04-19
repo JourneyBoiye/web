@@ -149,9 +149,9 @@
             <div class="content">
               <strong>{{name}}</strong>, {{country}}, {{region}}
 
-              {{#if fareValid}}
+              {{#if avg.fareValid}}
                 <i class="fas fa-plane result-fare"></i>
-                {{formatNumber fare style="currency" currency="USD"}}
+                {{formatNumber avg.avg style="currency" currency="USD"}}
               {{/if}}
 
               {{flagLevel level}}

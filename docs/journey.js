@@ -33,7 +33,7 @@ const apiUrl = 'https://openwhisk.ng.bluemix.net/api/v1/web/kahn.128%40osu.edu_d
 const feedbackServiceEndpoint = 'https://openwhisk.ng.bluemix.net/api/v1/web/lan.74%40osu.edu_dev/feedback/feedback-service.json'
 const journeyBoiye = {
   // add a single journeyBoiye entry
-  add(activities, dailyBudget) {
+  add(activities, budget, days, iataFrom) {
     console.log('Sending', activities)
     return $.ajax({
       type: 'POST',
@@ -41,7 +41,9 @@ const journeyBoiye = {
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify({
         activities,
-        dailyBudget
+        budget,
+        days,
+        iataFrom,
       }),
       dataType: 'json',
     });
@@ -83,8 +85,8 @@ Handlebars.registerHelper("flagLevel", function(level){
 });
 
 
-var min_rpi = 300;
-var max_rpi = 0;
+var min_rpi = Infinity;
+var max_rpi = -Infinity;
 
 function countryNameToCode(name) {
   let code = '';
@@ -119,7 +121,7 @@ function validateCountryInput(autocomplete, countryValid) {
   return ['Please enter location with autocomplete'];
 }
 
-const calculateDailyBudget = () => {
+const calculateDays = () => {
   let startDate = $('#start-date');
   let endDate = $('#end-date');
   let startStr = startDate.val();
@@ -129,9 +131,7 @@ const calculateDailyBudget = () => {
   var duration = moment.duration(end.diff(start));
   var days = duration.asDays();
 
-  let budgetInput = $('#budget');
-  let budget = budgetInput.val();
-  return budget / (days + 1);
+  return days + 1;
 }
 
 (function() {
@@ -139,6 +139,7 @@ const calculateDailyBudget = () => {
   if ( $('[type="date"]').prop('type') != 'date' ) {
     $('[type="date"]').datepicker();
   }
+
 
   var cityInput = document.getElementById('city');
   var autocomplete = new google.maps.places.Autocomplete(cityInput,
@@ -150,6 +151,12 @@ const calculateDailyBudget = () => {
   });
   google.maps.event.addListener(autocomplete, 'place_changed', function() {
     countryValid = true;
+  });
+
+  $(document).keydown(function(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
   });
 
   let errorsDisplay = $('#errors');
@@ -184,13 +191,17 @@ const calculateDailyBudget = () => {
       return;
     }
 
-    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
     let queryResults = $('#entries');
-    const dailyBudget = calculateDailyBudget();
+    const country = Object.freeze(getCountryFromAutocomplete(autocomplete));
+    const days = calculateDays();
+    const budget = parseInt(budgetInput.val());
+    const code = countryNameToCode(country);
 
     journeyBoiye.add(
       $('#activities').val().trim(),
-      dailyBudget
+      budget,
+      days,
+      code
     ).done(function(resp) {
       if (resp.resultsArray.length === 0) {
         queryResults.html(entriesTemplate(resp, {
@@ -203,31 +214,21 @@ const calculateDailyBudget = () => {
         min_rpi = resp.min_rpi;
         max_rpi = resp.max_rpi;
 
-        let code = countryNameToCode(country);
-        let iatas = resp.resultsArray.map(result => result.iata);
-
-        flightPriceAvgs(code, iatas).then(function(avgsResp) {
-          let avgs = avgsResp.avgs;
-
-          let augmentedResults = resp.resultsArray.map(function(result, i) {
-            let avg = avgs[i];
-            result.fare = avg.avg;
-            result.fareValid = avg.success && avg.size > 0;
-
-            return result;
-          });
-
-          let context = {
-            resultsArray: augmentedResults
-          };
-
-          queryResults.html(entriesTemplate(context, {
-            data: { intl: HANDLEBARS_INTL_DATA }
-          }));
-
-          $('#submitBtn').toggleClass("is-loading", false);
-          $("html, body").animate({scrollTop: 0 }, 600);
+        let augmentedResults = resp.resultsArray.map(result => {
+          result.avg.fareValid = result.avg.success && result.avg.size > 0;
+          return result;
         });
+
+        let context = {
+          resultsArray: augmentedResults
+        };
+
+        queryResults.html(entriesTemplate(context, {
+          data: { intl: HANDLEBARS_INTL_DATA }
+        }));
+
+        $('#submitBtn').toggleClass("is-loading", false);
+        $("html, body").animate({scrollTop: 0 }, 600);
       }
     }).error(error => {
       $('#submitBtn').toggleClass("is-loading", false);
@@ -244,36 +245,26 @@ const calculateDailyBudget = () => {
       journeyBoiye.update(
         $('#feedback').val().trim(), min_rpi, max_rpi, $('#activities').val().trim()
       ).done(function(result) {
-        // Only update the min/max rpi if we have new values from db
+        // Only update the min/max diff if we have new values from db
         if (result.docs.length != 0) {
           min_rpi = result.min_rpi;
           max_rpi = result.max_rpi;
-          let country = getCountryFromAutocomplete(autocomplete);
-          let code = countryNameToCode(country);
-          let iatas = result.docs.map(result => result.iata);
 
-          flightPriceAvgs(code, iatas).then(function(avgsResp) {
-            let avgs = avgsResp.avgs;
-
-            let augmentedResults = result.docs.map(function(result, i) {
-              let avg = avgs[i];
-              result.fare = avg.avg;
-              result.fareValid = avg.success && avg.size > 0;
-
-              return result;
-            });
-
-            let context = {
-              resultsArray: augmentedResults
-            };
-
-            queryResults.html(entriesTemplate(context, {
-              data: { intl: HANDLEBARS_INTL_DATA }
-            }));
-
-            $('#submitBtn').toggleClass("is-loading", false);
-            $("html, body").animate({scrollTop: 0 }, 600);
+          let augmentedResults = result.docs.map(result => {
+            result.avg.fareValid = result.avg.success && result.avg.size > 0;
+            return result;
           });
+
+          let context = {
+            resultsArray: augmentedResults
+          };
+
+          queryResults.html(entriesTemplate(context, {
+            data: { intl: HANDLEBARS_INTL_DATA }
+          }));
+
+          $('#submitBtn').toggleClass("is-loading", false);
+          $("html, body").animate({scrollTop: 0 }, 600);
         } else {
           let context = {
             resultsArray: [] 
