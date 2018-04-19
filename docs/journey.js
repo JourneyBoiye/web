@@ -160,6 +160,12 @@ const calculateDays = () => {
   });
 
 
+  $(document).keydown(function(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
+  });
+
   let errorsDisplay = $('#errors');
   let startDate = $('#start-date');
   let endDate = $('#end-date');
