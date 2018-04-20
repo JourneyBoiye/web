@@ -45,6 +45,9 @@ const journeyBoiye = {
         days,
         iataFrom,
       }),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       dataType: 'json',
     });
   },
@@ -63,6 +66,9 @@ const journeyBoiye = {
         "max_rpi": max_rpi,
         "activities": activities,
       }),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       dataType: 'json',
     })
   }
